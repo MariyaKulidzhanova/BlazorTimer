@@ -2,12 +2,14 @@
 
 @using System.Threading;
 
+<input @bind-value="Count" />
+
 <h1>@Count</h1>
 
 <button @onclick=@StartCountdown>Start Timer</button>
 
 @functions {
-    private int Count { get; set; } = 10;
+    private int Count { get; set; } = 0;
 
     void StartCountdown()
     {
