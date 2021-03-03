@@ -1,0 +1,28 @@
+﻿@page "/"
+
+@using System.Threading;
+
+<h1>@Count</h1>
+
+<button @onclick=@StartCountdown>Start Timer</button>
+
+@functions {
+    private int Count { get; set; } = 10;
+
+    void StartCountdown()
+    {
+        var timer = new Timer(new TimerCallback(_ =>
+        {
+            if (Count > 0)
+            {
+                Count--;
+
+                InvokeAsync(() =>
+                {
+
+                    StateHasChanged();
+                });
+            }
+        }), null, 1000, 1000);
+    }
+}
