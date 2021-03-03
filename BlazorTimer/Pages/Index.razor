@@ -6,13 +6,16 @@
 
 <h1>@Count</h1>
 
-<button @onclick=@StartCountdown>Start Timer</button>
+<button @onclick=@StartCountdown>@ButtonName</button>
 
-@functions {
+@code {
     private int Count { get; set; } = 0;
+    private string ButtonName { get; set; } = "Start";
 
     void StartCountdown()
     {
+        ButtonName = "Stop";
+
         var timer = new Timer(new TimerCallback(_ =>
         {
             if (Count > 0)
@@ -21,10 +24,11 @@
 
                 InvokeAsync(() =>
                 {
-
                     StateHasChanged();
                 });
             }
         }), null, 1000, 1000);
     }
+
+
 }
