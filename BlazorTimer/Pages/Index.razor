@@ -13,23 +13,28 @@
     private int Count { get; set; } = 0;
     private string ButtonName { get; set; } = "Start";
     private string Text { get; set; } = "";
-    private bool IsOn { get; set; } = false;
+    private int IsOn { get; set; } = 0;
 
 
     void StartCountdown()
     {
-        ButtonName = "Stop";
-        if (IsOn == true)
+        IsOn++;
+        if (IsOn % 2 == 0)
         {
-            Text = "Timer stopped";
+            ButtonName = "Continue timer";
+        }
+        else if (IsOn % 2 != 0)
+        {
+            ButtonName = "Pause timer";
         }
 
-        var timer = new Timer(new TimerCallback(_ =>
+
+        Timer timer = new Timer(new TimerCallback(_ =>
         {
             if (Count > 0)
             {
                 Count--;
-                IsOn = true;
+
 
                 InvokeAsync(() =>
                 {
@@ -37,6 +42,15 @@
                 });
             }
         }), null, 1000, 1000);
+
+       @* if (IsOn == 1)
+        {
+
+            //не останавливает
+            Text = "Timer paused";
+            //Count = 0;  //попробуй это когда нужно обновить , то есть начать с новым значением
+            timer.Change(Timeout.Infinite, Timeout.Infinite);// а это (или его вид), когда нужно сделать паузу. Поищи дополнительно в интернете
+        }*@
     }
 
 
