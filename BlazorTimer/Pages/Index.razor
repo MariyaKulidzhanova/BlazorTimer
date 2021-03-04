@@ -5,22 +5,31 @@
 <input @bind-value="Count" />
 
 <h1>@Count</h1>
+<h2>@Text</h2>
 
 <button @onclick=@StartCountdown>@ButtonName</button>
 
 @code {
     private int Count { get; set; } = 0;
     private string ButtonName { get; set; } = "Start";
+    private string Text { get; set; } = "";
+    private bool IsOn { get; set; } = false;
+
 
     void StartCountdown()
     {
         ButtonName = "Stop";
+        if (IsOn == true)
+        {
+            Text = "Timer stopped";
+        }
 
         var timer = new Timer(new TimerCallback(_ =>
         {
             if (Count > 0)
             {
                 Count--;
+                IsOn = true;
 
                 InvokeAsync(() =>
                 {
