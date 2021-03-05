@@ -3,12 +3,12 @@
 @using System.Threading;
 @inject IJSRuntime JsRuntime;
 
-<input @bind-value="Count" />
+<input @bind-value="Count" class="form-control-sm" />
 
-<div class="buttons">
-    <button @onclick=@StartCountdown>@ButtonName</button>
-    <button @onclick=@Pause>@ButtonName2</button>
-    <button @onclick=@Restart>Restart</button>
+<div class="buttons mt-2">
+    <button @onclick=@StartCountdown class="btn btn-dark">@ButtonName</button>
+    <button @onclick=@Pause class="btn btn-success">@ButtonName2</button>
+    <button @onclick=@Restart class="btn btn-danger">Restart</button>
 </div>
 
 
