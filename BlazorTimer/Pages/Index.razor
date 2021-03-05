@@ -2,16 +2,25 @@
 
 @using System.Threading;
 
-<h1>@Count</h1>
+<input @bind-value="Count" />
 
-<button @onclick=@StartCountdown>Start Timer</button>
+<div class="buttons">
+    <button @onclick=@StartCountdown>@ButtonName</button>
+    <button @onclick=@Pause>@ButtonName2</button>
+    <button @onclick=@Restart>Restart</button>
+</div>
 
-@functions {
-    private int Count { get; set; } = 10;
+
+@code {
+    private int Count { get; set; } = 0;
+    private string ButtonName { get; set; } = "Start";
+    private string ButtonName2 { get; set; } = "Pause";
+    private int IsOnCount { get; set; } = 0;
+    Timer timer;
 
     void StartCountdown()
     {
-        var timer = new Timer(new TimerCallback(_ =>
+        timer = new Timer(new TimerCallback(_ =>
         {
             if (Count > 0)
             {
@@ -19,10 +28,31 @@
 
                 InvokeAsync(() =>
                 {
-
                     StateHasChanged();
                 });
+
             }
         }), null, 1000, 1000);
+    }
+
+    void Pause()
+    {
+        IsOnCount++;
+        if (IsOnCount % 2 == 0)
+        {
+            ButtonName2 = "Pause timer";
+            StartCountdown();
+        }
+        else if (IsOnCount % 2 != 0)
+        {
+            timer.Change(Timeout.Infinite, Timeout.Infinite);
+            ButtonName2 = "Continue timer";
+        }
+    }
+
+    void Restart()
+    {
+        timer.Change(Timeout.Infinite, Timeout.Infinite);
+        Count = 0;
     }
 }
