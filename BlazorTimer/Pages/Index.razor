@@ -1,6 +1,7 @@
 ﻿@page "/"
 
 @using System.Threading;
+@inject IJSRuntime JsRuntime;
 
 <input @bind-value="Count" />
 
@@ -30,9 +31,14 @@
                 {
                     StateHasChanged();
                 });
-
+            }
+            if (Count == 0)
+            {
+                JsRuntime.InvokeAsync<bool>("alert", "Timer finished");
+                Count = -1;
             }
         }), null, 1000, 1000);
+
     }
 
     void Pause()
@@ -55,4 +61,5 @@
         timer.Change(Timeout.Infinite, Timeout.Infinite);
         Count = 0;
     }
+
 }
