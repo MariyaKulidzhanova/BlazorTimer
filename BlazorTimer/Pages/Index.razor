@@ -4,30 +4,23 @@
 
 <input @bind-value="Count" />
 
-<h2>@Text</h2>
+<div class="buttons">
+    <button @onclick=@StartCountdown style="color: red">@ButtonName</button>
 
-<button @onclick=@StartCountdown>@ButtonName</button>
-<button @onclick=@PauseContinue>@ButtonName</button>
+    <button @onclick=@Pause>@ButtonName2</button>
+</div>
+
 
 @code {
     private int Count { get; set; } = 0;
     private string ButtonName { get; set; } = "Start";
-    private string Text { get; set; } = "";
+    private string ButtonName2 { get; set; } = "Pause";
     private int IsOnCount { get; set; } = 0;
-    private System.Timers.Timer _timer = new System.Timers.Timer();
-    private volatile bool _requestStop = false;
+    Timer timer;
 
     void StartCountdown()
     {
-        _timer.Interval = 100;
-        _timer.Elapsed += OnTimerElapsed;
-        _timer.AutoReset = false;
-        _timer.Start();
-    }
-    void PauseContinue()
-    {
-       
-        @*var timer = new Timer(new TimerCallback(_ =>
+        timer = new Timer(new TimerCallback(_ =>
         {
             if (Count > 0)
             {
@@ -39,73 +32,22 @@
                 });
 
             }
-            else
-            {
-                ButtonName = "Timer is off. Please restart";
-                InvokeAsync(() =>
-                {
-                    StateHasChanged();
-                });
-            }
-        }), null, 1000, 1000);-->
-        if (Count == 5)
+        }), null, 1000, 1000);
+    }
+
+    void Pause()
+    {
+        IsOnCount++;
+        if (IsOnCount % 2 == 0) 
+        {
+            ButtonName2 = "Pause timer";
+            StartCountdown();
+        }
+        else if (IsOnCount % 2 != 0) 
         {
             timer.Change(Timeout.Infinite, Timeout.Infinite);
-            InvokeAsync(() =>
-            {
-                StateHasChanged();
-            });
-        }
-
-    IsOnCount++;
-    if  (IsOnCount % 2 != 0) //after this timer is running OR continued
-    {
-        ButtonName = "Pause timer";
-        //continue timer code
-
-
-    }
-    else if (IsOnCount % 2 == 0) //after this timer is paused
-    {
-        ButtonName = "Continue timer";
-        //pause timer code
-        timer.Change(Timeout.Infinite, Timeout.Infinite);
-        InvokeAsync(() =>
-        {
-            StateHasChanged();
-        });*@
-    }
-
-    private void OnTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
-    {
-        if (Count > 0)
-        {
-            if (!_requestStop)
-            {
-                _timer.Start();//restart the timer
-            }
-            Count--;
-
-            InvokeAsync(() =>
-            {
-                StateHasChanged();
-            });
+            ButtonName2 = "Continue timer";
 
         }
-
     }
-
-    private void Stop()
-    {
-        _requestStop = true;
-        _timer.Stop();
-    }
-
-    private void Start()
-    {
-        _requestStop = false;
-        _timer.Start();
-    }
-
-
 }
