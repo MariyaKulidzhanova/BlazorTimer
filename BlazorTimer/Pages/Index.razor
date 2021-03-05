@@ -5,9 +5,9 @@
 <input @bind-value="Count" />
 
 <div class="buttons">
-    <button @onclick=@StartCountdown style="color: red">@ButtonName</button>
-
+    <button @onclick=@StartCountdown>@ButtonName</button>
     <button @onclick=@Pause>@ButtonName2</button>
+    <button @onclick=@Restart>Restart</button>
 </div>
 
 
@@ -38,16 +38,21 @@
     void Pause()
     {
         IsOnCount++;
-        if (IsOnCount % 2 == 0) 
+        if (IsOnCount % 2 == 0)
         {
             ButtonName2 = "Pause timer";
             StartCountdown();
         }
-        else if (IsOnCount % 2 != 0) 
+        else if (IsOnCount % 2 != 0)
         {
             timer.Change(Timeout.Infinite, Timeout.Infinite);
             ButtonName2 = "Continue timer";
-
         }
+    }
+
+    void Restart()
+    {
+        timer.Change(Timeout.Infinite, Timeout.Infinite);
+        Count = 0;
     }
 }
