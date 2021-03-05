@@ -4,53 +4,107 @@
 
 <input @bind-value="Count" />
 
-<h1>@Count</h1>
 <h2>@Text</h2>
 
 <button @onclick=@StartCountdown>@ButtonName</button>
+<button @onclick=@PauseContinue>@ButtonName</button>
 
 @code {
     private int Count { get; set; } = 0;
     private string ButtonName { get; set; } = "Start";
     private string Text { get; set; } = "";
-    private int IsOn { get; set; } = 0;
-
+    private int IsOnCount { get; set; } = 0;
+    private System.Timers.Timer _timer = new System.Timers.Timer();
+    private volatile bool _requestStop = false;
 
     void StartCountdown()
     {
-        IsOn++;
-        if (IsOn % 2 == 0)
-        {
-            ButtonName = "Continue timer";
-        }
-        else if (IsOn % 2 != 0)
-        {
-            ButtonName = "Pause timer";
-        }
-
-
-        Timer timer = new Timer(new TimerCallback(_ =>
+        _timer.Interval = 100;
+        _timer.Elapsed += OnTimerElapsed;
+        _timer.AutoReset = false;
+        _timer.Start();
+    }
+    void PauseContinue()
+    {
+       
+        @*var timer = new Timer(new TimerCallback(_ =>
         {
             if (Count > 0)
             {
                 Count--;
 
+                InvokeAsync(() =>
+                {
+                    StateHasChanged();
+                });
 
+            }
+            else
+            {
+                ButtonName = "Timer is off. Please restart";
                 InvokeAsync(() =>
                 {
                     StateHasChanged();
                 });
             }
-        }), null, 1000, 1000);
-
-       @* if (IsOn == 1)
+        }), null, 1000, 1000);-->
+        if (Count == 5)
         {
+            timer.Change(Timeout.Infinite, Timeout.Infinite);
+            InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
 
-            //не останавливает
-            Text = "Timer paused";
-            //Count = 0;  //попробуй это когда нужно обновить , то есть начать с новым значением
-            timer.Change(Timeout.Infinite, Timeout.Infinite);// а это (или его вид), когда нужно сделать паузу. Поищи дополнительно в интернете
-        }*@
+    IsOnCount++;
+    if  (IsOnCount % 2 != 0) //after this timer is running OR continued
+    {
+        ButtonName = "Pause timer";
+        //continue timer code
+
+
+    }
+    else if (IsOnCount % 2 == 0) //after this timer is paused
+    {
+        ButtonName = "Continue timer";
+        //pause timer code
+        timer.Change(Timeout.Infinite, Timeout.Infinite);
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });*@
+    }
+
+    private void OnTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (Count > 0)
+        {
+            if (!_requestStop)
+            {
+                _timer.Start();//restart the timer
+            }
+            Count--;
+
+            InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+
+        }
+
+    }
+
+    private void Stop()
+    {
+        _requestStop = true;
+        _timer.Stop();
+    }
+
+    private void Start()
+    {
+        _requestStop = false;
+        _timer.Start();
     }
 
 
