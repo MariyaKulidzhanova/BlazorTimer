@@ -3,7 +3,9 @@
 @using System.Threading;
 @inject IJSRuntime JsRuntime;
 
-<input @bind-value="Count" class="form-control-sm" />
+<h3>Enter value in minutes: </h3>
+<input @bind-value="Time" class="form-control-sm" type="time" />
+<p>@Text</p>
 
 <div class="buttons mt-2">
     <button @onclick=@StartCountdown class="btn btn-dark">@ButtonName</button>
@@ -13,20 +15,28 @@
 
 
 @code {
+    private DateTime Time { get; set; } = new DateTime(2000, 1, 1, 0, 0, 0); //
     private int Count { get; set; } = 0;
     private string ButtonName { get; set; } = "Start";
     private string ButtonName2 { get; set; } = "Pause";
     private int IsOnCount { get; set; } = 0;
     Timer timer;
 
+    private string Text { get; set; } = ""; 
+
     void StartCountdown()
     {
+        //Count = Math.Truncate(Count) * 60+(Count-Math.Truncate(Count))*100;
+        Count = Time.Minute + Time.Hour * 60;
+
+        Text = Count.ToString(); //later will be changed to have a nicer view
+
         timer = new Timer(new TimerCallback(_ =>
         {
             if (Count > 0)
             {
                 Count--;
-
+                Text = Count.ToString();
                 InvokeAsync(() =>
                 {
                     StateHasChanged();
@@ -46,19 +56,28 @@
         IsOnCount++;
         if (IsOnCount % 2 == 0)
         {
-            ButtonName2 = "Pause timer";
+            ButtonName2 = "Pause timer";//continue with paused Count
             StartCountdown();
+
         }
         else if (IsOnCount % 2 != 0)
         {
             timer.Change(Timeout.Infinite, Timeout.Infinite);
+
             ButtonName2 = "Continue timer";
+
+            //save current Count
+            Time = new DateTime(2000, 1, 1,Count/60,Count%60,0);
         }
     }
 
     void Restart()
     {
         timer.Change(Timeout.Infinite, Timeout.Infinite);
+        Time = new DateTime(2000, 1, 1, 0, 0, 0);
+        ButtonName2 = "Pause timer";
+        IsOnCount++;
+        Text = "";
         Count = 0;
     }
 
