@@ -1,28 +1,110 @@
 ﻿@page "/"
 
 @using System.Threading;
+@inject IJSRuntime JsRuntime
 
-<h1>@Count</h1>
+<style>
+    .center {
+        margin: auto;
+        margin-top: 15%;
+        width: 25%;
+        padding: 20px;
+        background-color: #4e1e4a;
+    }
+    .localDateTime{
+        color:white;
+    }
+</style>
 
-<button @onclick=@StartCountdown>Start Timer</button>
+<p class="localDateTime">Current local time is: @currentLocalTime</p>
+<div class="center">
+    <h3 class="text-white">Enter value: </h3>
+    <input @bind-value="Time" class="form-control-sm" type="time" />
 
-@functions {
-    private int Count { get; set; } = 10;
+    <div class="buttons mt-2">
+        <button @onclick=@StartCountdown disabled="@Disabled" class="btn btn-light">Start</button>
+        <button @onclick=@Pause class="btn btn-dark">@ButtonName2</button>
+        <button @onclick=@Restart class="btn btn-danger">Restart</button>
+    </div>
+</div>
+
+@code {
+    private DateTime Time { get; set; } = new DateTime(2000, 1, 1, 0, 0, 0);
+    private int Count { get; set; } = 0;
+    private string ButtonName2 { get; set; } = "Pause";
+    private int IsOnCount { get; set; } = 0;
+    Timer timer;
+    private bool Disabled { get; set; } = false;
+
+    private DateTime currentLocalTime { get; set; } = DateTime.Now;
+    protected override void OnInitialized()
+    {
+        Timer datetimeTimer = new Timer(new TimerCallback(_ =>
+        {
+            currentLocalTime = DateTime.Now;
+            InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+
+        }), null, 1000, 1000);
+
+    }
 
     void StartCountdown()
     {
-        var timer = new Timer(new TimerCallback(_ =>
+        Count = Time.Minute + Time.Hour * 60;
+
+        timer = new Timer(new TimerCallback(_ =>
         {
             if (Count > 0)
             {
                 Count--;
-
+                Time = new DateTime(2000, 1, 1, Count / 60, Count % 60, 0);
                 InvokeAsync(() =>
                 {
-
                     StateHasChanged();
                 });
             }
+            if (Count == 0)
+            {
+                JsRuntime.InvokeAsync<bool>("alert", "Timer finished");
+                Count = -1;
+                Disabled = false;
+            }
         }), null, 1000, 1000);
+
+        Disabled = true;
     }
+
+    void Pause()
+    {
+        IsOnCount++;
+        if (IsOnCount % 2 == 0)
+        {
+            ButtonName2 = "Pause";//continue with paused Count
+            StartCountdown();
+
+        }
+        else if (IsOnCount % 2 != 0)
+        {
+            timer.Change(Timeout.Infinite, Timeout.Infinite);
+
+            ButtonName2 = "Continue ";
+
+            //save current Count
+            Time = new DateTime(2000, 1, 1, Count / 60, Count % 60, 0);
+        }
+    }
+
+    void Restart()
+    {
+        timer.Change(Timeout.Infinite, Timeout.Infinite);
+        Time = new DateTime(2000, 1, 1, 0, 0, 0);
+        ButtonName2 = "Pause ";
+        IsOnCount++;
+        Count = 0;
+        Disabled = false;
+    }
+
 }
