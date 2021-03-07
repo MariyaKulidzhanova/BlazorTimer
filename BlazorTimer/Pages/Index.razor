@@ -1,18 +1,19 @@
 ﻿@page "/"
 
 @using System.Threading;
-@inject IJSRuntime JsRuntime;
+@inject IJSRuntime JsRuntime
 
 <style>
     .center {
         margin: auto;
-        margin-top:15%;
+        margin-top: 15%;
         width: 40%;
         border: 5px solid #100e16;
         padding: 10px;
     }
 </style>
 
+<p>Current local time is: @currentLocalTime</p>
 <div class="center">
     <h3>Enter value: </h3>
     <input @bind-value="Time" class="form-control-sm" type="time" />
@@ -31,8 +32,22 @@
     private string ButtonName2 { get; set; } = "Pause";
     private int IsOnCount { get; set; } = 0;
     Timer timer;
-
     private bool Disabled { get; set; } = false;
+
+    private DateTime currentLocalTime { get; set; } = DateTime.Now;
+    protected override void OnInitialized()
+    {
+        Timer datetimeTimer = new Timer(new TimerCallback(_ =>
+        {
+            currentLocalTime = DateTime.Now;
+            InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+
+        }), null, 1000, 1000);
+
+    }
 
     void StartCountdown()
     {
@@ -75,7 +90,7 @@
             ButtonName2 = "Continue timer";
 
             //save current Count
-            Time = new DateTime(2000, 1, 1, Count/60, Count%60,0);
+            Time = new DateTime(2000, 1, 1, Count / 60, Count % 60, 0);
         }
     }
 
