@@ -3,13 +3,25 @@
 @using System.Threading;
 @inject IJSRuntime JsRuntime;
 
-<h3>Enter value in minutes: </h3>
-<input @bind-value="Time" class="form-control-sm" type="time" />
+<style>
+    .center {
+        margin: auto;
+        margin-top:15%;
+        width: 40%;
+        border: 5px solid #100e16;
+        padding: 10px;
+    }
+</style>
 
-<div class="buttons mt-2">
-    <button @onclick=@StartCountdown disabled="@Disabled" class="btn btn-dark">Start</button>
-    <button @onclick=@Pause class="btn btn-success">@ButtonName2</button>
-    <button @onclick=@Restart class="btn btn-danger">Restart</button>
+<div class="center">
+    <h3>Enter value: </h3>
+    <input @bind-value="Time" class="form-control-sm" type="time" />
+
+    <div class="buttons mt-2">
+        <button @onclick=@StartCountdown disabled="@Disabled" class="btn btn-dark">Start</button>
+        <button @onclick=@Pause class="btn btn-success">@ButtonName2</button>
+        <button @onclick=@Restart class="btn btn-danger">Restart</button>
+    </div>
 </div>
 
 
