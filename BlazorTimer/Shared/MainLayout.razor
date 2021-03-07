@@ -1,13 +1,22 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<style>
+    html, .page {
+        background-image: linear-gradient(to right, rgb(65 15 77), rgba(130,0,200,0));
+    }
+</style>
 
+<div class="page" >
     <div class="main">
         <div class="content px-4">
             @Body
         </div>
     </div>
+
+    <footer class="fixed-bottom border-top footer text-white py-1">
+        <div class="container">
+            Developed by Maria Kulidzhanova w/ Blazor
+            <a href="https://github.com/MariyaKulidzhanova"><img src="/github.png" style="width:20px;height:20px;"/></a>
+        </div>
+    </footer>
 </div>
